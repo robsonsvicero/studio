@@ -48,8 +48,8 @@ export function Header() {
             <Image
               src={displayLogo.imageUrl}
               alt="André Barbosa Imóveis Logo"
-              width={180}
-              height={60}
+              width={270}
+              height={90}
               data-ai-hint={displayLogo.imageHint}
               priority
             />
@@ -66,7 +66,7 @@ export function Header() {
             </Button>
             <Button
                 variant={!isScrolled ? "outline" : "default"}
-                className={cn('transition-colors', !isScrolled && 'text-white border-white/80 hover:bg-white hover:text-primary')}
+                className={cn('transition-colors', !isScrolled && 'bg-primary border-transparent text-primary-foreground hover:bg-primary/90')}
                 asChild
               >
                <a href="https://wa.me/5511999998888" target="_blank" rel="noopener noreferrer">
@@ -91,8 +91,8 @@ export function Header() {
                         <Image
                           src={logoDefault.imageUrl}
                           alt="André Barbosa Imóveis Logo"
-                          width={180}
-                          height={60}
+                          width={270}
+                          height={90}
                           data-ai-hint={logoDefault.imageHint}
                         />
                       )}
