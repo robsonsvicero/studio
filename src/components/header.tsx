@@ -49,7 +49,7 @@ export function Header() {
               src={displayLogo.imageUrl}
               alt="André Barbosa Imóveis Logo"
               width={180}
-              height={40}
+              height={60}
               data-ai-hint={displayLogo.imageHint}
               priority
             />
@@ -92,7 +92,7 @@ export function Header() {
                           src={logoDefault.imageUrl}
                           alt="André Barbosa Imóveis Logo"
                           width={180}
-                          height={40}
+                          height={60}
                           data-ai-hint={logoDefault.imageHint}
                         />
                       )}
