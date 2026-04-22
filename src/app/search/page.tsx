@@ -2,12 +2,14 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { AiChatAssistant } from '@/components/ai-chat-assistant';
 import { interpretSearchQuery } from '@/ai/flows/interpret-search-query-flow';
 import type { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-query-flow';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -73,14 +75,35 @@ function SearchResults() {
 
 
 export default function SearchPage() {
+  const searchHeroImage = PlaceHolderImages.find((img) => img.id === 'search-hero-background');
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-24 sm:py-32">
-        <h1 className="text-3xl font-bold mb-8">Resultados da Busca</h1>
-        <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-          <SearchResults />
-        </Suspense>
+      <main className="flex-grow">
+        <section className="relative h-[40vh] min-h-[300px] w-full flex items-center justify-center">
+            {searchHeroImage && (
+                <Image
+                    src={searchHeroImage.imageUrl}
+                    alt={searchHeroImage.description}
+                    fill
+                    className="object-cover"
+                    priority
+                    data-ai-hint={searchHeroImage.imageHint}
+                />
+            )}
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative z-10 container mx-auto text-center text-white px-4">
+                <h1 className="text-4xl md:text-5xl font-headline font-bold drop-shadow-lg">
+                    Resultados da Busca
+                </h1>
+            </div>
+        </section>
+        <div className="container mx-auto px-4 py-16 sm:py-24">
+            <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+            <SearchResults />
+            </Suspense>
+        </div>
       </main>
       <Footer />
       <AiChatAssistant />

@@ -59,6 +59,12 @@
       "description": "A sleek, minimalist kitchen with modern appliances.",
       "imageUrl": "https://picsum.photos/seed/8/600/400",
       "imageHint": "minimalist kitchen"
+    },
+    {
+      "id": "search-hero-background",
+      "description": "A stylish and modern home office view from the window.",
+      "imageUrl": "https://picsum.photos/seed/9/1920/600",
+      "imageHint": "office window"
     }
   ]
 }
