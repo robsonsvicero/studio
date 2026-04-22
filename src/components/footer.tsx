@@ -1,10 +1,14 @@
-import { Logo } from '@/components/logo';
+import Image from 'next/image';
+import Link from 'next/link';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
 export function Footer() {
+  const logoImage = PlaceHolderImages.find((img) => img.id === 'logo');
+
   return (
     <footer id="contato" className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16 sm:py-24">
@@ -35,7 +39,18 @@ export function Footer() {
             </form>
           </div>
           <div className="flex flex-col items-start md:items-end text-left md:text-right">
-             <Logo className="mb-4" textClassName="text-primary-foreground" />
+             <Link href="/" className="mb-4">
+               {logoImage && (
+                 <Image
+                   src={logoImage.imageUrl}
+                   alt="André Barbosa Imóveis Logo"
+                   width={180}
+                   height={40}
+                   className="invert"
+                   data-ai-hint={logoImage.imageHint}
+                 />
+               )}
+             </Link>
              <p className="max-w-sm text-primary-foreground/80 mb-4">
               Realizando sonhos e construindo futuros no coração do Brasil.
             </p>

@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Logo } from '@/components/logo';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const navLinks = [
   { href: '#inicio', label: 'Início' },
@@ -17,6 +18,7 @@ const navLinks = [
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const logoImage = PlaceHolderImages.find((img) => img.id === 'logo');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,7 +38,19 @@ export function Header() {
       )}
     >
       <div className="container mx-auto flex h-20 items-center justify-between">
-        <Logo />
+        <Link href="/">
+          {logoImage && (
+            <Image
+              src={logoImage.imageUrl}
+              alt="André Barbosa Imóveis Logo"
+              width={180}
+              height={40}
+              className="dark:invert"
+              data-ai-hint={logoImage.imageHint}
+              priority
+            />
+          )}
+        </Link>
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
@@ -58,7 +72,18 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right">
               <div className="flex flex-col gap-6 p-6">
-                <Logo />
+                <Link href="/">
+                  {logoImage && (
+                    <Image
+                      src={logoImage.imageUrl}
+                      alt="André Barbosa Imóveis Logo"
+                      width={180}
+                      height={40}
+                      className="dark:invert"
+                      data-ai-hint={logoImage.imageHint}
+                    />
+                  )}
+                </Link>
                 <nav className="flex flex-col gap-4">
                   {navLinks.map((link) => (
                     <Link

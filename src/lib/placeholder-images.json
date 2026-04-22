@@ -1,6 +1,12 @@
 {
   "placeholderImages": [
     {
+      "id": "logo",
+      "description": "Logo da empresa",
+      "imageUrl": "https://picsum.photos/seed/ab-logo/180/40",
+      "imageHint": "company logo"
+    },
+    {
       "id": "hero-background",
       "description": "A bright and spacious high-end modern living room interior.",
       "imageUrl": "https://picsum.photos/seed/1/1920/1080",
