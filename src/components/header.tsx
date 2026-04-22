@@ -36,8 +36,10 @@ export function Header() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-300',
-        isScrolled ? 'bg-background/80 shadow-md backdrop-blur-sm' : 'bg-transparent'
+        'top-0 left-0 right-0 z-50 w-full transition-all duration-300',
+        isScrolled
+          ? 'fixed bg-background/80 shadow-md backdrop-blur-sm'
+          : 'absolute bg-transparent'
       )}
     >
       <div className="container mx-auto flex h-20 items-center justify-between">
