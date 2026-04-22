@@ -1,3 +1,52 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-background",
+      "description": "A bright and spacious high-end modern living room interior.",
+      "imageUrl": "https://picsum.photos/seed/1/1920/1080",
+      "imageHint": "living room"
+    },
+    {
+      "id": "consultant-portrait",
+      "description": "A professional portrait of a real estate consultant.",
+      "imageUrl": "https://picsum.photos/seed/2/800/800",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "property-1",
+      "description": "Exterior of a modern house with a clean design.",
+      "imageUrl": "https://picsum.photos/seed/3/600/400",
+      "imageHint": "modern house"
+    },
+    {
+      "id": "property-2",
+      "description": "Living room of a luxury apartment with city views.",
+      "imageUrl": "https://picsum.photos/seed/4/600/400",
+      "imageHint": "luxury apartment"
+    },
+    {
+      "id": "property-3",
+      "description": "A charming suburban family house with a front yard.",
+      "imageUrl": "https://picsum.photos/seed/5/600/400",
+      "imageHint": "suburban house"
+    },
+    {
+      "id": "property-4",
+      "description": "Balcony of a city condo with a view.",
+      "imageUrl": "https://picsum.photos/seed/6/600/400",
+      "imageHint": "city balcony"
+    },
+    {
+      "id": "property-5",
+      "description": "A cozy cottage with a beautiful garden.",
+      "imageUrl": "https://picsum.photos/seed/7/600/400",
+      "imageHint": "cozy cottage"
+    },
+    {
+      "id": "property-6",
+      "description": "A sleek, minimalist kitchen with modern appliances.",
+      "imageUrl": "https://picsum.photos/seed/8/600/400",
+      "imageHint": "minimalist kitchen"
+    }
+  ]
 }
