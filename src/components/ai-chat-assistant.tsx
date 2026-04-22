@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useState, useRef, useEffect, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Bot, MessageCircle, Send, User, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -47,7 +47,7 @@ export function AiChatAssistant() {
       content: 'Olá! Sou seu assistente imobiliário. Como posso ajudar a encontrar o imóvel ideal em São Paulo para você hoje?',
     },
   ]);
-  const [formState, formAction] = useFormState(askAiAssistant, initialState);
+  const [formState, formAction] = useActionState(askAiAssistant, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
