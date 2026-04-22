@@ -2,13 +2,7 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 
 export function HeroSection() {
@@ -31,45 +25,19 @@ export function HeroSection() {
         <h1 className="text-4xl md:text-6xl font-headline font-bold mb-4 drop-shadow-lg">
           Encontre o imóvel dos seus sonhos
         </h1>
-        <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 drop-shadow-md">
-          Consultoria imobiliária de excelência para encontrar o lugar perfeito para você.
+        <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 drop-shadow-md">
+          Descreva o que você procura: "apartamento perto de metrô com 2 quartos e varanda gourmet"
         </p>
         <Card className="max-w-3xl mx-auto bg-background/80 backdrop-blur-sm border-none">
           <CardContent className="p-4">
-            <form className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <Select>
-                <SelectTrigger className="text-foreground">
-                  <SelectValue placeholder="Tipo de imóvel" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="casa">Casa</SelectItem>
-                  <SelectItem value="apartamento">Apartamento</SelectItem>
-                  <SelectItem value="cobertura">Cobertura</SelectItem>
-                  <SelectItem value="terreno">Terreno</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger className="text-foreground">
-                  <SelectValue placeholder="Cidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sao-paulo">São Paulo</SelectItem>
-                  <SelectItem value="campinas">Campinas</SelectItem>
-                  <SelectItem value="santos">Santos</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger className="text-foreground">
-                  <SelectValue placeholder="Faixa de preço" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="500k">Até R$500.000</SelectItem>
-                  <SelectItem value="1m">R$500.001 a R$1.000.000</SelectItem>
-                  <SelectItem value="2m">R$1.000.001 a R$2.000.000</SelectItem>
-                  <SelectItem value="plus">Acima de R$2.000.000</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+            <form action="/search" method="GET" className="flex gap-4 items-center">
+              <Input
+                name="q"
+                placeholder="Quero um apartamento perto de uma escola boa, com vista para o parque..."
+                className="text-foreground flex-grow"
+                autoComplete="off"
+              />
+              <Button type="submit" className="w-full md:w-auto bg-primary hover:bg-primary/90">
                 <Search className="mr-2 h-4 w-4" />
                 Buscar
               </Button>
