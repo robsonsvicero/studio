@@ -18,7 +18,8 @@ const navLinks = [
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const logoImage = PlaceHolderImages.find((img) => img.id === 'logo');
+  const logoDefault = PlaceHolderImages.find((img) => img.id === 'logo');
+  const logoWhite = PlaceHolderImages.find((img) => img.id === 'logo-branco');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +31,8 @@ export function Header() {
     };
   }, []);
 
+  const displayLogo = !isScrolled ? logoWhite : logoDefault;
+
   return (
     <header
       className={cn(
@@ -39,32 +42,22 @@ export function Header() {
     >
       <div className="container mx-auto flex h-20 items-center justify-between">
         <Link href="/">
-          {logoImage && (
+          {displayLogo && (
             <Image
-              src={logoImage.imageUrl}
+              src={displayLogo.imageUrl}
               alt="André Barbosa Imóveis Logo"
               width={180}
               height={40}
-              data-ai-hint={logoImage.imageHint}
+              data-ai-hint={displayLogo.imageHint}
               priority
             />
           )}
         </Link>
-        <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="md:hidden">
+
+        <div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className={cn(!isScrolled && 'text-white hover:text-white hover:bg-white/20')}>
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
@@ -72,13 +65,13 @@ export function Header() {
             <SheetContent side="right">
               <div className="flex flex-col gap-6 p-6">
                 <Link href="/">
-                  {logoImage && (
+                  {logoDefault && (
                     <Image
-                      src={logoImage.imageUrl}
+                      src={logoDefault.imageUrl}
                       alt="André Barbosa Imóveis Logo"
                       width={180}
                       height={40}
-                      data-ai-hint={logoImage.imageHint}
+                      data-ai-hint={logoDefault.imageHint}
                     />
                   )}
                 </Link>
