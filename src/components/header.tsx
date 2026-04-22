@@ -82,7 +82,7 @@ export function Header() {
                 <span className="sr-only">Abrir menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
+            <SheetContent side="right" className="w-full sm:max-w-none">
               <div className="flex h-full flex-col">
                 <div className="flex-grow">
                   <div className="flex flex-col gap-6 p-6">

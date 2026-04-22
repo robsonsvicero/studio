@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils';
 export const metadata: Metadata = {
   title: 'André Barbosa Imóveis',
   description: 'Encontre o imóvel dos seus sonhos com a consultoria de André Barbosa.',
+  icons: {
+    icon: '/selo.png',
+  },
 };
 
 export default function RootLayout({
