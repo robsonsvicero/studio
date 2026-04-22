@@ -45,7 +45,6 @@ export function Header() {
               alt="André Barbosa Imóveis Logo"
               width={180}
               height={40}
-              className="dark:invert"
               data-ai-hint={logoImage.imageHint}
               priority
             />
@@ -79,7 +78,6 @@ export function Header() {
                       alt="André Barbosa Imóveis Logo"
                       width={180}
                       height={40}
-                      className="dark:invert"
                       data-ai-hint={logoImage.imageHint}
                     />
                   )}

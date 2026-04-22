@@ -3,7 +3,7 @@
     {
       "id": "logo",
       "description": "Logo da empresa",
-      "imageUrl": "https://picsum.photos/seed/ab-logo/180/40",
+      "imageUrl": "/assets/logo.png",
       "imageHint": "company logo"
     },
     {
