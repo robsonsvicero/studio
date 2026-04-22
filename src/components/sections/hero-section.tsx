@@ -53,9 +53,9 @@ export function HeroSection() {
                   <SelectValue placeholder="Cidade" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="brasilia">Brasília</SelectItem>
-                  <SelectItem value="aguas-claras">Águas Claras</SelectItem>
-                  <SelectItem value="guara">Guará</SelectItem>
+                  <SelectItem value="sao-paulo">São Paulo</SelectItem>
+                  <SelectItem value="campinas">Campinas</SelectItem>
+                  <SelectItem value="santos">Santos</SelectItem>
                 </SelectContent>
               </Select>
               <Select>

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
 export function Footer() {
-  const logoImage = PlaceHolderImages.find((img) => img.id === 'logo');
+  const logoImage = PlaceHolderImages.find((img) => img.id === 'logo-branco');
 
   return (
     <footer id="contato" className="bg-primary text-primary-foreground">
@@ -51,10 +51,10 @@ export function Footer() {
                )}
              </Link>
              <p className="max-w-sm text-primary-foreground/80 mb-4">
-              Realizando sonhos e construindo futuros no coração do Brasil.
+              Realizando sonhos e construindo futuros na maior metrópole do país.
             </p>
-            <p className="font-semibold">Brasília, DF</p>
-            <p className="text-primary-foreground/80">(61) 99999-8888</p>
+            <p className="font-semibold">São Paulo, SP</p>
+            <p className="text-primary-foreground/80">(11) 99999-8888</p>
             <p className="text-primary-foreground/80">contato@andrebarbosaimoveis.com</p>
           </div>
         </div>

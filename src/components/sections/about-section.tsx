@@ -27,7 +27,7 @@ export function AboutSection() {
             <p className="text-accent font-semibold text-lg mb-6">Consultor Imobiliário</p>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                Com mais de 15 anos de experiência no mercado de alto padrão de Brasília, meu compromisso é com a excelência e a satisfação do cliente. Acredito que encontrar um imóvel é mais do que uma transação; é a realização de um sonho.
+                Com mais de 15 anos de experiência no mercado de alto padrão de São Paulo, meu compromisso é com a excelência e a satisfação do cliente. Acredito que encontrar um imóvel é mais do que uma transação; é a realização de um sonho.
               </p>
               <p>
                 Minha abordagem é pautada na transparência, ética e um profundo conhecimento do mercado local. Estou aqui para guiar você em cada passo do processo, garantindo uma experiência segura, tranquila e bem-sucedida.

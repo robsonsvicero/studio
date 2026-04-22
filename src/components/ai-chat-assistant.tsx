@@ -44,7 +44,7 @@ export function AiChatAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Olá! Sou seu assistente imobiliário. Como posso ajudar a encontrar o imóvel ideal para você hoje?',
+      content: 'Olá! Sou seu assistente imobiliário. Como posso ajudar a encontrar o imóvel ideal em São Paulo para você hoje?',
     },
   ]);
   const [formState, formAction] = useFormState(askAiAssistant, initialState);

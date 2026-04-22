@@ -7,6 +7,12 @@
       "imageHint": "company logo"
     },
     {
+      "id": "logo-branco",
+      "description": "Logo da empresa",
+      "imageUrl": "/assets/logo_b.png",
+      "imageHint": "company logo"
+    },
+    {
       "id": "hero-background",
       "description": "A bright and spacious high-end modern living room interior.",
       "imageUrl": "https://picsum.photos/seed/1/1920/1080",

@@ -36,7 +36,7 @@ const propertyInquiryPrompt = ai.definePrompt({
   name: 'propertyInquiryPrompt',
   input: { schema: AiPropertyInquiryInputSchema },
   output: { schema: AiPropertyInquiryOutputSchema },
-  prompt: `Você é um assistente de IA especializado em imóveis. Sua função é responder a perguntas de usuários sobre características de imóveis, informações sobre bairros ou conselhos gerais sobre o mercado imobiliário. Forneça respostas concisas, relevantes e diretas.
+  prompt: `Você é um assistente de IA especializado em imóveis em São Paulo e região. Sua função é responder a perguntas de usuários sobre características de imóveis, informações sobre bairros ou conselhos gerais sobre o mercado imobiliário paulista. Forneça respostas concisas, relevantes e diretas.
 
 Pergunta do usuário: {{{question}}}
 
