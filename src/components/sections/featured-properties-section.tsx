@@ -1,7 +1,16 @@
 import { PropertyCard } from '@/components/property-card';
-import { properties } from '@/lib/data';
+import { adminDb } from '@/lib/firebase/admin';
 
-export function FeaturedPropertiesSection() {
+export async function FeaturedPropertiesSection() {
+  let properties: any[] = [];
+  
+  try {
+    const snapshot = await adminDb.collection('properties').orderBy('createdAt', 'desc').limit(6).get();
+    properties = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error fetching properties for homepage', error);
+  }
+
   return (
     <section id="destaques" className="py-16 sm:py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -12,9 +21,15 @@ export function FeaturedPropertiesSection() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.slice(0, 6).map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
+          {properties.length === 0 ? (
+            <div className="col-span-full text-center text-muted-foreground py-12">
+              Nenhum imóvel cadastrado no momento.
+            </div>
+          ) : (
+            properties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))
+          )}
         </div>
       </div>
     </section>
