@@ -10,11 +10,14 @@ import { interpretSearchQuery } from '@/ai/flows/interpret-search-query-flow';
 import type { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-query-flow';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { searchProperties } from '@/app/actions';
+import { PropertyCard } from '@/components/property-card';
 
 function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q');
   const [result, setResult] = useState<InterpretSearchQueryOutput | null>(null);
+  const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +26,11 @@ function SearchResults() {
       setLoading(true);
       setError(null);
       interpretSearchQuery({ query })
-        .then(setResult)
+        .then(async (aiResult) => {
+          setResult(aiResult);
+          const filtered = await searchProperties(aiResult);
+          setProperties(filtered);
+        })
         .catch(() => setError('Não foi possível processar sua busca. Tente novamente.'))
         .finally(() => setLoading(false));
     } else {
@@ -63,11 +70,24 @@ function SearchResults() {
         <p>Não conseguimos interpretar sua busca.</p>
       )}
 
-      <div className="mt-8 border-t pt-8">
-        <h3 className="text-xl font-bold mb-4">Resultados da Busca (Demonstração)</h3>
-        <p className="text-muted-foreground">
-          (Em breve, os imóveis correspondentes à sua busca aparecerão aqui.)
-        </p>
+      <div className="mt-12 border-t pt-8">
+        <h3 className="text-2xl font-bold mb-6">Imóveis encontrados:</h3>
+        
+        {properties.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {properties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-muted/30 rounded-2xl">
+            <p className="text-xl text-muted-foreground">
+              Nenhum imóvel encontrado para os critérios da sua busca. 
+              <br /> 
+              Tente pesquisar por algo diferente!
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

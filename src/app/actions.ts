@@ -88,3 +88,57 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
         }
     }
 }
+
+export async function searchProperties(filters: InterpretSearchQueryOutput) {
+  if (!adminDb) return [];
+  
+  try {
+    const snapshot = await adminDb.collection('properties').get();
+    let properties = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.().toISOString() || null,
+        updatedAt: data.updatedAt?.toDate?.().toISOString() || null,
+      };
+    });
+
+    // Filtro por Tipo de Imóvel
+    if (filters.propertyType && filters.propertyType.length > 0) {
+      properties = properties.filter(p => 
+        filters.propertyType!.some(type => 
+          p.propertyType?.toLowerCase().includes(type.toLowerCase())
+        )
+      );
+    }
+
+    // Filtro por Quartos
+    if (filters.bedrooms) {
+      properties = properties.filter(p => (p.beds || 0) >= filters.bedrooms!);
+    }
+
+    // Filtro por Localização (Cidade/Bairro)
+    if (filters.location) {
+      properties = properties.filter(p => 
+        p.address?.toLowerCase().includes(filters.location!.toLowerCase()) ||
+        p.title?.toLowerCase().includes(filters.location!.toLowerCase())
+      );
+    }
+
+    // Filtro por Características (Features)
+    if (filters.features && filters.features.length > 0) {
+      properties = properties.filter(p => 
+        filters.features!.some(feature => 
+          p.description?.toLowerCase().includes(feature.toLowerCase()) ||
+          p.title?.toLowerCase().includes(feature.toLowerCase())
+        )
+      );
+    }
+
+    return properties;
+  } catch (error) {
+    console.error('Error searching properties:', error);
+    return [];
+  }
+}
