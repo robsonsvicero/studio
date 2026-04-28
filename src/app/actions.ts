@@ -3,6 +3,8 @@
 import { aiPropertyInquiryAssistant } from '@/ai/flows/ai-property-inquiry-assistant';
 import { aiConcierge } from '@/ai/flows/ai-concierge-flow';
 import { z } from 'zod';
+import { adminDb } from '@/lib/firebase/admin';
+import { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-query-flow';
 
 const AskQuestionSchema = z.object({
   question: z.string().min(5, 'A pergunta deve ter pelo menos 5 caracteres.'),

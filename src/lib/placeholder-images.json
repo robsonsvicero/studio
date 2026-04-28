@@ -15,13 +15,13 @@
     {
       "id": "hero-background",
       "description": "A bright and spacious high-end modern living room interior.",
-      "imageUrl": "https://picsum.photos/seed/1/1920/1080",
+      "imageUrl": "/assets/hero.png",
       "imageHint": "living room"
     },
     {
       "id": "consultant-portrait",
       "description": "A professional portrait of a real estate consultant.",
-      "imageUrl": "https://picsum.photos/seed/2/800/800",
+      "imageUrl": "/assets/corretor01.png",
       "imageHint": "man portrait"
     },
     {

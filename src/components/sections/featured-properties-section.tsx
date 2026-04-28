@@ -5,8 +5,18 @@ export async function FeaturedPropertiesSection() {
   let properties: any[] = [];
   
   try {
-    const snapshot = await adminDb.collection('properties').orderBy('createdAt', 'desc').limit(6).get();
-    properties = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if (adminDb) {
+      const snapshot = await adminDb.collection('properties').orderBy('createdAt', 'desc').limit(6).get();
+      properties = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.().toISOString() || null,
+          updatedAt: data.updatedAt?.toDate?.().toISOString() || null,
+        };
+      });
+    }
   } catch (error) {
     console.error('Error fetching properties for homepage', error);
   }

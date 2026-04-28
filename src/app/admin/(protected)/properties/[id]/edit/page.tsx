@@ -10,7 +10,12 @@ export default async function EditPropertyPage({ params }: { params: { id: strin
     notFound();
   }
 
-  const initialData = doc.data();
+  const data = doc.data();
+  const initialData = {
+    ...data,
+    createdAt: data?.createdAt?.toDate?.()?.toISOString() || null,
+    updatedAt: data?.updatedAt?.toDate?.()?.toISOString() || null,
+  };
 
   return (
     <div className="space-y-6">

@@ -4,18 +4,20 @@ import { Button } from '@/components/ui/button';
 
 export function AboutSection() {
   const consultantImage = PlaceHolderImages.find((img) => img.id === 'consultant-portrait');
-
+  
   return (
     <section id="quem-somos" className="py-16 sm:py-24 bg-secondary">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="relative aspect-square max-w-md mx-auto">
+          <div className="relative aspect-square w-full max-w-md mx-auto">
             {consultantImage && (
               <Image
                 src={consultantImage.imageUrl}
                 alt={consultantImage.description}
                 fill
+                sizes="(max-width: 768px) 100vw, 500px"
                 className="rounded-lg object-cover shadow-2xl"
+                priority
                 data-ai-hint={consultantImage.imageHint}
               />
             )}

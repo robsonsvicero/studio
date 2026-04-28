@@ -14,7 +14,15 @@ export default async function AdminDashboard() {
   
   try {
     const snapshot = await adminDb.collection('properties').orderBy('createdAt', 'desc').get();
-    properties = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    properties = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.().toISOString() || null,
+        updatedAt: data.updatedAt?.toDate?.().toISOString() || null,
+      };
+    });
   } catch (error) {
     console.error('Error fetching properties', error);
   }
