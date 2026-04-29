@@ -36,7 +36,7 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {properties.map((property) => {
+        {Array.isArray(properties) && properties.map((property) => {
           const lat = property.lat || (-23.5505 + (Math.random() - 0.5) * 0.1);
           const lng = property.lng || (-46.6333 + (Math.random() - 0.5) * 0.1);
           
