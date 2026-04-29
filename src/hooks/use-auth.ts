@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { User, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
-import { removeSessionCookie } from '@/app/actions/auth';
 import { useRouter } from 'next/navigation';
 
 export function useAuth() {
@@ -22,7 +21,6 @@ export function useAuth() {
 
   const logout = async () => {
     await signOut(auth);
-    await removeSessionCookie();
     router.push('/admin/login');
   };
 

@@ -41,6 +41,14 @@ export async function FeaturedPropertiesSection() {
             ))
           )}
         </div>
+        <div className="mt-12 text-center">
+          <a
+            href="/properties"
+            className="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90 shadow-lg"
+          >
+            VER TODOS OS IMÓVEIS
+          </a>
+        </div>
       </div>
     </section>
   );

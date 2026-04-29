@@ -9,7 +9,7 @@ export function PropertyCard({ property }: { property: any }) {
   const formattedPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.price || 0);
 
   return (
-    <Link href={`/properties/${property.id}`} className="block h-full transition-transform duration-300 hover:-translate-y-2">
+    <Link href={`/properties/view?id=${property.id}`} className="block h-full transition-transform duration-300 hover:-translate-y-2">
       <Card className="h-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl flex flex-col cursor-pointer">
         <CardHeader className="p-0 relative">
           {imageUrl ? (

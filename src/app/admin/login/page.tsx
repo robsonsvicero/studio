@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
-import { createSessionCookie } from '@/app/actions/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,15 +22,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const idToken = await userCredential.user.getIdToken();
-      
-      const result = await createSessionCookie(idToken);
-      if (result.success) {
-        router.push('/admin');
-      } else {
-        setError('Falha ao criar sessão. Tente novamente.');
-      }
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push('/admin');
     } catch (err: any) {
       console.error(err);
       setError('Credenciais inválidas. Verifique seu email e senha.');

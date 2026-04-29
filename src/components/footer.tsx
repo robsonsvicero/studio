@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { submitContactForm } from '@/app/actions';
 import { Loader2 } from 'lucide-react';
+import * as React from 'react';
 
 const initialState = {
   response: null,
@@ -19,26 +19,38 @@ const initialState = {
   submitted: false,
 };
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground" disabled={pending}>
-      {pending ? <Loader2 className="animate-spin mr-2" /> : null}
-      Enviar Mensagem
-    </Button>
-  );
-}
+import { getApiUrl } from '@/lib/api-utils';
 
 export function Footer() {
   const logoImage = PlaceHolderImages.find((img) => img.id === 'logo-branco');
-  const [state, formAction] = useActionState(submitContactForm, initialState);
+  const [state, setState] = React.useState(initialState);
+  const [loading, setLoading] = React.useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-  useEffect(() => {
-    if (state.submitted) {
-      formRef.current?.reset();
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      const response = await fetch(getApiUrl('/api/contact'), {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      setState(result);
+      
+      if (result.submitted) {
+        formRef.current?.reset();
+      }
+    } catch (err) {
+      console.error(err);
+      setState({ ...initialState, response: 'Erro ao enviar mensagem. Tente novamente.' });
+    } finally {
+      setLoading(false);
     }
-  }, [state.submitted]);
+  };
 
   return (
     <footer id="contato" className="bg-primary text-primary-foreground">
@@ -55,25 +67,28 @@ export function Footer() {
                     <p>{state.response}</p>
                 </div>
             ) : (
-                <form ref={formRef} action={formAction} className="space-y-4">
+                <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-primary-foreground/90">Nome</Label>
-                      <Input id="name" name="name" placeholder="Seu nome completo" className="bg-background/20 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60" />
+                      <Input id="name" name="name" placeholder="Seu nome completo" required className="bg-background/20 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60" />
                       {state.errors?.name && <p className="text-sm text-accent">{state.errors.name[0]}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-primary-foreground/90">Email</Label>
-                      <Input id="email" name="email" type="email" placeholder="seu@email.com" className="bg-background/20 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60" />
+                      <Input id="email" name="email" type="email" placeholder="seu@email.com" required className="bg-background/20 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60" />
                       {state.errors?.email && <p className="text-sm text-accent">{state.errors.email[0]}</p>}
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="message" className="text-primary-foreground/90">Mensagem</Label>
-                    <Textarea id="message" name="message" placeholder="Como posso ajudar? Ex: Busco apartamento de 3 quartos no Itaim Bibi." className="bg-background/20 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60" />
+                    <Textarea id="message" name="message" placeholder="Como posso ajudar? Ex: Busco apartamento de 3 quartos no Itaim Bibi." required className="bg-background/20 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60" />
                     {state.errors?.message && <p className="text-sm text-accent">{state.errors.message[0]}</p>}
                   </div>
-                  <SubmitButton />
+                  <Button type="submit" size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground" disabled={loading}>
+                    {loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : null}
+                    Enviar Mensagem
+                  </Button>
                   {!state.submitted && state.response && (
                     <p className="text-sm text-accent">{state.response}</p>
                   )}

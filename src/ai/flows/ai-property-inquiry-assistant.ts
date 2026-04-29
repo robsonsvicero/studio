@@ -1,4 +1,4 @@
-'use server';
+
 /**
  * @fileOverview An AI assistant that answers natural language questions about property features, neighborhood information, or general real estate advice.
  *

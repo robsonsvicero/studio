@@ -10,34 +10,18 @@ import {
   SheetHeader,
   SheetTitle,
   SheetFooter,
-  SheetClose,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { askAiAssistant } from '@/app/actions';
+import { getApiUrl } from '@/lib/api-utils';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 
 type Message = {
   role: 'user' | 'assistant';
   content: string;
 };
-
-const initialState = {
-  message: null,
-  error: false,
-};
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" size="icon" aria-disabled={pending} disabled={pending}>
-      {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-      <span className="sr-only">Enviar</span>
-    </Button>
-  );
-}
 
 export function AiChatAssistant() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,24 +31,10 @@ export function AiChatAssistant() {
       content: 'Olá! Sou seu assistente imobiliário. Como posso ajudar a encontrar o imóvel ideal em São Paulo para você hoje?',
     },
   ]);
-  const [formState, formAction] = useActionState(askAiAssistant, initialState);
+  const [loading, setLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (formState.message) {
-      if (formState.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Erro no Assistente',
-          description: formState.message,
-        });
-      } else {
-        setMessages((prev) => [...prev, { role: 'assistant', content: formState.message! }]);
-      }
-    }
-  }, [formState, toast]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -75,12 +45,40 @@ export function AiChatAssistant() {
     }
   }, [messages]);
 
-  const handleFormSubmit = async (formData: FormData) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     const question = formData.get('question') as string;
-    if (question && question.trim().length > 0) {
-      setMessages((prev) => [...prev, { role: 'user', content: question }]);
-      formAction(formData);
-      formRef.current?.reset();
+    
+    if (!question || question.trim().length === 0) return;
+
+    setMessages((prev) => [...prev, { role: 'user', content: question }]);
+    setLoading(true);
+    formRef.current?.reset();
+
+    try {
+      const response = await fetch(getApiUrl('/api/ai/assistant'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+      
+      const data = await response.json();
+      
+      if (data.message) {
+        setMessages((prev) => [...prev, { role: 'assistant', content: data.message }]);
+      } else {
+        throw new Error('Sem resposta da IA');
+      }
+    } catch (err) {
+      console.error(err);
+      toast({
+        variant: 'destructive',
+        title: 'Erro no Assistente',
+        description: 'Não foi possível obter uma resposta agora. Tente novamente em breve.',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -141,13 +139,17 @@ export function AiChatAssistant() {
             </div>
           </ScrollArea>
           <SheetFooter>
-            <form ref={formRef} action={handleFormSubmit} className="flex w-full items-center gap-2">
+            <form ref={formRef} onSubmit={handleFormSubmit} className="flex w-full items-center gap-2">
               <Input
                 name="question"
                 placeholder="Pergunte sobre um imóvel..."
                 autoComplete="off"
+                disabled={loading}
               />
-              <SubmitButton />
+              <Button type="submit" size="icon" disabled={loading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                <span className="sr-only">Enviar</span>
+              </Button>
             </form>
           </SheetFooter>
         </SheetContent>

@@ -6,12 +6,10 @@ import Image from 'next/image';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { AiChatAssistant } from '@/components/ai-chat-assistant';
-import { interpretSearchQuery } from '@/ai/flows/interpret-search-query-flow';
 import type { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-query-flow';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { searchProperties } from '@/app/actions';
-import { PropertyCard } from '@/components/property-card';
+import { getApiUrl } from '@/lib/api-utils';
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -25,14 +23,31 @@ function SearchResults() {
     if (query) {
       setLoading(true);
       setError(null);
-      interpretSearchQuery({ query })
-        .then(async (aiResult) => {
-          setResult(aiResult);
-          const filtered = await searchProperties(aiResult);
-          setProperties(filtered);
-        })
-        .catch(() => setError('Não foi possível processar sua busca. Tente novamente.'))
-        .finally(() => setLoading(false));
+      
+      // 1. Chamar API de interpretação da IA
+      fetch(getApiUrl('/api/ai/interpret'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      })
+      .then(res => res.json())
+      .then(async (aiResult) => {
+        setResult(aiResult);
+        
+        // 2. Chamar API de busca de imóveis com os filtros da IA
+        const searchRes = await fetch(getApiUrl('/api/search'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filters: aiResult })
+        });
+        const filtered = await searchRes.json();
+        setProperties(filtered);
+      })
+      .catch((err) => {
+        console.error('Search error:', err);
+        setError('Não foi possível processar sua busca. Tente novamente.');
+      })
+      .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }

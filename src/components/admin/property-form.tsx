@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, UploadCloud, X } from 'lucide-react';
+import { geocodeAddress } from '@/lib/geocoding';
 
 type PropertyFormProps = {
   initialData?: any;
@@ -102,6 +103,9 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
 
       const finalImages = [...existingImages, ...uploadedUrls];
 
+      // Geocodificação automática
+      const coords = await geocodeAddress(formData.address);
+
       const propertyData = {
         ...formData,
         price: Number(formData.price),
@@ -112,6 +116,8 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
         suites: Number(formData.suites),
         floor: formData.floor ? Number(formData.floor) : null,
         images: finalImages,
+        lat: coords?.lat || null,
+        lng: coords?.lng || null,
         updatedAt: serverTimestamp(),
       };
 

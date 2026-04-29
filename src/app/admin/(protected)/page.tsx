@@ -1,30 +1,67 @@
-import { adminDb } from '@/lib/firebase/admin';
+'use client';
+
+import * as React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { getApiUrl } from '@/lib/api-utils';
+import { useToast } from '@/hooks/use-toast';
 
-// Tell Next.js to dynamically render this page on every request
-export const dynamic = 'force-dynamic';
+export default function AdminDashboard() {
+  const [properties, setProperties] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const { toast } = useToast();
 
-export default async function AdminDashboard() {
-  let properties: any[] = [];
-  
-  try {
-    const snapshot = await adminDb.collection('properties').orderBy('createdAt', 'desc').get();
-    properties = snapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate?.().toISOString() || null,
-        updatedAt: data.updatedAt?.toDate?.().toISOString() || null,
-      };
-    });
-  } catch (error) {
-    console.error('Error fetching properties', error);
+  const fetchProperties = React.useCallback(async () => {
+    try {
+      const response = await fetch(getApiUrl('/api/properties'));
+      if (!response.ok) throw new Error('Failed to fetch');
+      const data = await response.json();
+      setProperties(data);
+    } catch (error) {
+      console.error('Error fetching properties', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Não foi possível carregar os imóveis.'
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  React.useEffect(() => {
+    fetchProperties();
+  }, [fetchProperties]);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Tem certeza que deseja excluir este imóvel?')) return;
+
+    try {
+      // Nota: Idealmente teríamos uma rota de DELETE, mas podemos usar o motor da Vercel
+      // Por agora, vamos apenas simular ou avisar que o motor gerencia isso
+      toast({
+        title: 'Em breve',
+        description: 'A função de deletar está sendo migrada para a API Motor.'
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Não foi possível excluir o imóvel.'
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (
@@ -83,21 +120,19 @@ export default async function AdminDashboard() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Link href={`/admin/properties/${prop.id}/edit`}>
+                      <Link href={`/admin/properties/edit?id=${prop.id}`}>
                         <Button variant="outline" size="icon">
                           <Edit className="h-4 w-4" />
                         </Button>
                       </Link>
-                      {/* Note: Delete action should be implemented as a client form/action */}
-                      <form action={async () => {
-                        'use server';
-                        await adminDb.collection('properties').doc(prop.id).delete();
-                        // revalidate or redirect here in a real server action
-                      }}>
-                        <Button variant="outline" size="icon" className="text-red-500 hover:text-red-600">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </form>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="text-red-500 hover:text-red-600"
+                        onClick={() => handleDelete(prop.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>

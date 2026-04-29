@@ -1,4 +1,4 @@
-'use server';
+
 
 import { aiPropertyInquiryAssistant } from '@/ai/flows/ai-property-inquiry-assistant';
 import { aiConcierge } from '@/ai/flows/ai-concierge-flow';
@@ -108,21 +108,24 @@ export async function searchProperties(filters: InterpretSearchQueryOutput) {
     if (filters.propertyType && filters.propertyType.length > 0) {
       properties = properties.filter(p => 
         filters.propertyType!.some(type => 
-          p.propertyType?.toLowerCase().includes(type.toLowerCase())
+          p.propertyType?.toLowerCase().includes(type.toLowerCase()) ||
+          type.toLowerCase().includes(p.propertyType?.toLowerCase() || '')
         )
       );
     }
 
     // Filtro por Quartos
     if (filters.bedrooms) {
-      properties = properties.filter(p => (p.beds || 0) >= filters.bedrooms!);
+      properties = properties.filter(p => (Number(p.beds) || 0) >= filters.bedrooms!);
     }
 
-    // Filtro por Localização (Cidade/Bairro)
+    // Filtro por Localização
     if (filters.location) {
+      const loc = filters.location.toLowerCase();
       properties = properties.filter(p => 
-        p.address?.toLowerCase().includes(filters.location!.toLowerCase()) ||
-        p.title?.toLowerCase().includes(filters.location!.toLowerCase())
+        p.address?.toLowerCase().includes(loc) ||
+        p.title?.toLowerCase().includes(loc) ||
+        loc.includes(p.address?.toLowerCase() || '')
       );
     }
 

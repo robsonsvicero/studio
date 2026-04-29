@@ -10,8 +10,8 @@ import { useState, useEffect } from 'react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const navLinks = [
-  { href: '#inicio', label: 'Início' },
-  { href: '#destaques', label: 'Imóveis' },
+  { href: '/', label: 'Início' },
+  { href: '/properties', label: 'Imóveis' },
   { href: '#quem-somos', label: 'Quem Somos' },
   { href: '#contato', label: 'Contato' },
   { href: '/admin/login', label: 'Área do Corretor' },
