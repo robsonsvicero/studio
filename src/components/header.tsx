@@ -19,10 +19,12 @@ const navLinks = [
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const logoDefault = PlaceHolderImages.find((img) => img.id === 'logo');
   const logoWhite = PlaceHolderImages.find((img) => img.id === 'logo-branco');
 
   useEffect(() => {
+    setIsMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -53,6 +55,7 @@ export function Header() {
                 alt="André Barbosa Imóveis Logo"
                 width={200}
                 height={66}
+                style={{ height: 'auto', width: 'auto' }}
                 data-ai-hint={displayLogo.imageHint}
                 className="w-auto h-12 md:h-14"
                 priority
@@ -63,68 +66,71 @@ export function Header() {
 
         {/* Menu Hamburguer ao centro */}
         <div className="flex justify-center">
-          <Sheet>
-            <SheetTrigger asChild>
-              <button 
-                className={cn(
-                  'group flex flex-col items-center justify-center gap-2.5 p-2 transition-all hover:opacity-80',
-                  !isScrolled ? 'text-white' : 'text-foreground'
-                )}
-              >
-                <span className={cn(
-                  "h-1 w-10 rounded-full bg-current transition-all",
-                  !isScrolled ? "bg-white" : "bg-primary"
-                )} />
-                <span className={cn(
-                  "h-1 w-10 rounded-full bg-current transition-all",
-                  !isScrolled ? "bg-white" : "bg-primary"
-                )} />
-                <span className="sr-only">Abrir menu</span>
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:max-w-none">
-              <SheetTitle className="sr-only">Menu Principal</SheetTitle>
-              <div className="flex h-full flex-col">
-                <div className="flex-grow">
-                  <div className="flex flex-col items-center gap-6 p-6 mt-10">
-                    <Link href="/">
-                      {logoDefault && (
-                        <Image
-                          src={logoDefault.imageUrl}
-                          alt="André Barbosa Imóveis Logo"
-                          width={200}
-                          height={66}
-                          data-ai-hint={logoDefault.imageHint}
-                          className="w-auto h-12"
-                        />
-                      )}
-                    </Link>
-                    <nav className="flex flex-col items-center gap-6 mt-4">
-                      {navLinks.map((link) => (
-                        <Link
-                          key={link.href}
-                          href={link.href}
-                          className="text-xl font-medium text-foreground/80 transition-colors hover:text-primary text-center"
-                        >
-                          {link.label}
-                        </Link>
-                      ))}
-                    </nav>
+          {isMounted && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <button 
+                  className={cn(
+                    'group flex flex-col items-center justify-center gap-2.5 p-2 transition-all hover:opacity-80',
+                    !isScrolled ? 'text-white' : 'text-foreground'
+                  )}
+                >
+                  <span className={cn(
+                    "h-1 w-10 rounded-full bg-current transition-all",
+                    !isScrolled ? "bg-white" : "bg-primary"
+                  )} />
+                  <span className={cn(
+                    "h-1 w-10 rounded-full bg-current transition-all",
+                    !isScrolled ? "bg-white" : "bg-primary"
+                  )} />
+                  <span className="sr-only">Abrir menu</span>
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-full sm:max-w-none">
+                <SheetTitle className="sr-only">Menu Principal</SheetTitle>
+                <div className="flex h-full flex-col">
+                  <div className="flex-grow">
+                    <div className="flex flex-col items-center gap-6 p-6 mt-10">
+                      <Link href="/">
+                        {logoDefault && (
+                          <Image
+                            src={logoDefault.imageUrl}
+                            alt="André Barbosa Imóveis Logo"
+                            width={200}
+                            height={66}
+                            style={{ height: 'auto', width: 'auto' }}
+                            data-ai-hint={logoDefault.imageHint}
+                            className="w-auto h-12"
+                          />
+                        )}
+                      </Link>
+                      <nav className="flex flex-col items-center gap-6 mt-4">
+                        {navLinks.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className="text-xl font-medium text-foreground/80 transition-colors hover:text-primary text-center"
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                      </nav>
+                    </div>
+                  </div>
+                  <div className="border-t p-6 space-y-4 flex flex-col items-center">
+                      <a href="tel:11999998888" className="flex items-center gap-3 text-foreground/80 hover:text-primary">
+                          <Phone size={20}/>
+                          <span>(11) 99999-8888</span>
+                      </a>
+                      <a href="https://wa.me/5511999998888" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground/80 hover:text-primary">
+                          <MessageSquare size={20}/>
+                          <span>Whatsapp</span>
+                      </a>
                   </div>
                 </div>
-                <div className="border-t p-6 space-y-4 flex flex-col items-center">
-                    <a href="tel:11999998888" className="flex items-center gap-3 text-foreground/80 hover:text-primary">
-                        <Phone size={20}/>
-                        <span>(11) 99999-8888</span>
-                    </a>
-                    <a href="https://wa.me/5511999998888" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground/80 hover:text-primary">
-                        <MessageSquare size={20}/>
-                        <span>Whatsapp</span>
-                    </a>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+          )}
         </div>
 
         {/* Botão de Contato à direita */}

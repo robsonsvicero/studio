@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+#devtools-indicator,
+[data-next-badge-root],
+[data-next-badge],
+div[class*="next-badge"],
+nextjs-portal {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 @layer base {
   :root {
     --background: 43 47% 91%; /* Sand */

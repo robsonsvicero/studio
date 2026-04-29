@@ -18,6 +18,7 @@ export function PropertyCard({ property }: { property: any }) {
               alt={property.title}
               width={600}
               height={400}
+              style={{ height: 'auto' }}
               className="object-cover w-full h-48"
             />
           ) : (
