@@ -127,9 +127,9 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
       submitted: true
     };
   } catch (error) {
-    console.error('Submit error:', error);
+    console.error('CRITICAL ERROR in submitContactForm:', error);
     return {
-      response: 'Ocorreu um erro ao processar sua mensagem.',
+      response: 'Ocorreu um erro ao processar sua mensagem. Por favor, tente novamente mais tarde.',
       errors: null,
       submitted: false,
     };
