@@ -6,10 +6,35 @@ import { usePathname } from 'next/navigation';
 import { Home, Building, Plus, LogOut, Loader2, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
+import { getApiUrl } from '@/lib/api-utils';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
   const pathname = usePathname();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+
+    async function fetchUnreadCount() {
+      try {
+        const response = await fetch(getApiUrl('/api/admin/contacts'));
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          const count = data.filter((c: any) => c.status !== 'read').length;
+          setUnreadCount(count);
+        }
+      } catch (error) {
+        // Silently fail — não queremos travar o layout por causa disso
+      }
+    }
+
+    fetchUnreadCount();
+    // Atualizar a contagem a cada 60 segundos
+    const interval = setInterval(fetchUnreadCount, 60000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   if (loading) {
     return (
@@ -19,17 +44,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // If not loading and no user, middleware should have redirected. But just in case:
   if (!user) {
     return null; 
   }
-
-  const navItems = [
-    { name: 'Dashboard', href: '/admin', icon: Home },
-    { name: 'Contatos', href: '/admin/contacts', icon: MessageSquare },
-    { name: 'Novo Imóvel', href: '/admin/properties/new', icon: Plus },
-    { name: 'Ver Site', href: '/', icon: Building },
-  ];
 
   return (
     <div className="flex min-h-screen bg-muted/20">
@@ -39,22 +56,64 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <span className="font-bold text-xl tracking-tight">Admin<span className="text-primary">Panel</span></span>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link key={item.href} href={item.href}>
-                <span className={cn(
-                  "flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
-                  isActive 
-                    ? "bg-primary/10 text-primary" 
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}>
-                  <item.icon className={cn("mr-3 h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
-                  {item.name}
+          {/* Dashboard */}
+          <Link href="/admin">
+            <span className={cn(
+              "flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
+              pathname === '/admin'
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}>
+              <Home className={cn("mr-3 h-5 w-5", pathname === '/admin' ? "text-primary" : "text-muted-foreground")} />
+              Dashboard
+            </span>
+          </Link>
+
+          {/* Contatos — com badge de não lidos */}
+          <Link href="/admin/contacts">
+            <span className={cn(
+              "flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
+              pathname === '/admin/contacts'
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}>
+              <span className="flex items-center">
+                <MessageSquare className={cn("mr-3 h-5 w-5", pathname === '/admin/contacts' ? "text-primary" : "text-muted-foreground")} />
+                Contatos
+              </span>
+              {unreadCount > 0 && (
+                <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-orange-500 text-white animate-pulse">
+                  {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
-              </Link>
-            );
-          })}
+              )}
+            </span>
+          </Link>
+
+          {/* Novo Imóvel */}
+          <Link href="/admin/properties/new">
+            <span className={cn(
+              "flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
+              pathname === '/admin/properties/new'
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}>
+              <Plus className={cn("mr-3 h-5 w-5", pathname === '/admin/properties/new' ? "text-primary" : "text-muted-foreground")} />
+              Novo Imóvel
+            </span>
+          </Link>
+
+          {/* Ver Site */}
+          <Link href="/">
+            <span className={cn(
+              "flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
+              pathname === '/'
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}>
+              <Building className={cn("mr-3 h-5 w-5", pathname === '/' ? "text-primary" : "text-muted-foreground")} />
+              Ver Site
+            </span>
+          </Link>
         </nav>
         <div className="p-4 border-t">
           <div className="mb-4 px-3 text-sm text-muted-foreground truncate">
