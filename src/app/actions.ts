@@ -119,6 +119,7 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
         } catch (mailError) {
             console.error('Falha ao enviar e-mail de notificação:', mailError);
         }
+    }
 
         return { 
             response: responseToUser,
