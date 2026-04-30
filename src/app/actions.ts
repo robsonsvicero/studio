@@ -8,7 +8,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-query-flow';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const AskQuestionSchema = z.object({
   question: z.string().min(5, 'A pergunta deve ter pelo menos 5 caracteres.'),
@@ -88,9 +88,10 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
             });
         }
 
-        // Envia notificação por e-mail para o corretor
-        try {
-            await resend.emails.send({
+        // Envia notificação por e-mail para o corretor se o Resend estiver configurado
+        if (resend) {
+            try {
+                await resend.emails.send({
                 from: 'André Barbosa Imóveis <contato@andrebarbosaimoveis.com.br>',
                 to: 'contato@andrebarbosaimoveis.com.br',
                 subject: `🆕 Novo Lead: ${validatedFields.data.name}`,
