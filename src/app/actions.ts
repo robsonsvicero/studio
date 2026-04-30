@@ -1,34 +1,19 @@
 'use server';
 
-import { aiPropertyInquiryAssistant } from '@/ai/flows/ai-property-inquiry-assistant';
-import { aiConcierge } from '@/ai/flows/ai-concierge-flow';
 import { z } from 'zod';
 import { adminDb } from '@/lib/firebase/admin';
 import { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-query-flow';
 import { Resend } from 'resend';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-
-if (!resend) {
-    console.warn('⚠️ ATENÇÃO: RESEND_API_KEY não foi encontrada!');
-} else {
-    console.log('✅ Resend inicializado com a chave que começa com:', process.env.RESEND_API_KEY?.substring(0, 7));
-}
-
-const AskQuestionSchema = z.object({
-  question: z.string().min(5, 'A pergunta deve ter pelo menos 5 caracteres.'),
-});
+const genAI = process.env.GOOGLE_GENAI_API_KEY ? new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY) : null;
 
 const ContactFormSchema = z.object({
   name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres.'),
   email: z.string().email('Por favor, insira um email válido.'),
   message: z.string().min(10, 'A mensagem deve ter pelo menos 10 caracteres.'),
 });
-
-type State = {
-  message?: string | null;
-  error?: boolean;
-};
 
 type ContactState = {
   response?: string | null;
@@ -40,29 +25,6 @@ type ContactState = {
   } | null;
   submitted: boolean;
 };
-
-export async function askAiAssistant(
-  prevState: State,
-  formData: FormData
-): Promise<State> {
-  const validatedFields = AskQuestionSchema.safeParse({
-    question: formData.get('question'),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      message: validatedFields.error.flatten().fieldErrors.question?.join(', '),
-      error: true,
-    };
-  }
-
-  try {
-    const result = await aiPropertyInquiryAssistant({ question: validatedFields.data.question });
-    return { message: result.answer, error: false };
-  } catch (e) {
-    return { message: 'Ocorreu um erro ao contatar o assistente.', error: true };
-  }
-}
 
 export async function submitContactForm(prevState: ContactState, formData: FormData): Promise<ContactState> {
   const validatedFields = ContactFormSchema.safeParse({
@@ -80,19 +42,41 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
   }
 
   let responseToUser = 'Obrigado pelo contato! Recebemos sua mensagem e retornaremos em breve.';
-  let summaryForAgent = 'Nenhum resumo disponível (IA temporariamente indisponível).';
+  let summaryForAgent = 'Nenhum resumo disponível no momento.';
 
   try {
-    // Tenta usar a IA, mas não trava se ela falhar
-    try {
-      const aiResult = await aiConcierge(validatedFields.data);
-      responseToUser = aiResult.responseToUser;
-      summaryForAgent = aiResult.summaryForAgent;
-    } catch (aiError) {
-      console.warn('AI Concierge falhou (provavelmente 503 da Google). Continuando sem IA...', aiError);
+    // IA com a biblioteca oficial (mais estável)
+    if (genAI) {
+      try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `Você é um concierge para André Barbosa, corretor de imóveis. 
+        O cliente ${validatedFields.data.name} enviou a mensagem: "${validatedFields.data.message}". 
+        Responda em JSON com dois campos: 
+        1. "summary": Um resumo curto do que o cliente quer para o corretor.
+        2. "reply": Uma resposta curta e gentil para o cliente.
+        Responda APENAS o JSON puro.`;
+        
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        
+        try {
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const data = JSON.parse(jsonMatch[0]);
+            summaryForAgent = data.summary || summaryForAgent;
+            responseToUser = data.reply || responseToUser;
+          }
+        } catch (e) {
+          console.warn('Erro ao parsear JSON da IA, usando texto puro.');
+          summaryForAgent = text.substring(0, 200);
+        }
+      } catch (aiErr) {
+        console.error('Erro na IA:', aiErr);
+      }
     }
 
-    // 1. Salvar no Firestore (Sempre acontece agora)
+    // 1. Salvar no Firestore
     if (adminDb) {
       await adminDb.collection('contacts').add({
         ...validatedFields.data,
@@ -102,11 +86,10 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
       });
     }
 
-    // 2. Enviar Notificação por E-mail (Sempre acontece agora)
+    // 2. Enviar E-mail
     if (resend) {
-      console.log('Tentando enviar e-mail via Resend...');
       try {
-        const mailData = await resend.emails.send({
+        await resend.emails.send({
           from: 'André Barbosa Imóveis <onboarding@resend.dev>',
           to: 'contato@andrebarbosaimoveis.com.br',
           subject: `🆕 Novo Lead: ${validatedFields.data.name}`,
@@ -116,7 +99,7 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
               <p><strong>Nome:</strong> ${validatedFields.data.name}</p>
               <p><strong>E-mail:</strong> ${validatedFields.data.email}</p>
               <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-              <p><strong>Mensagem:</strong></p>
+              <p><strong>Mensagem Original:</strong></p>
               <blockquote style="background: #f9f9f9; padding: 15px; border-left: 4px solid #4a5d4a;">
                 ${validatedFields.data.message}
               </blockquote>
@@ -124,17 +107,16 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
                 <p style="margin: 0; font-size: 12px; color: #666;"><strong>Resumo da IA:</strong></p>
                 <p style="margin: 5px 0 0 0;">${summaryForAgent}</p>
               </div>
-              <p style="margin-top: 30px; font-size: 14px;">
+              <p style="margin-top: 30px;">
                 <a href="https://andrebarbosaimoveis.com.br/admin/contacts" style="background: #4a5d4a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-                  Ver no Painel Admin
+                  Ver no Painel
                 </a>
               </p>
             </div>
           `
         });
-        console.log('E-mail enviado com sucesso! ID:', mailData.data?.id);
       } catch (mailErr) {
-        console.error('Email error:', mailErr);
+        console.error('Erro e-mail:', mailErr);
       }
     }
 
@@ -145,9 +127,9 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
       submitted: true
     };
   } catch (error) {
-    console.error('CRITICAL ERROR in submitContactForm:', error);
+    console.error('Erro crítico:', error);
     return {
-      response: 'Ocorreu um erro ao processar sua mensagem. Por favor, tente novamente mais tarde.',
+      response: 'Ocorreu um erro ao processar sua mensagem.',
       errors: null,
       submitted: false,
     };
@@ -160,7 +142,6 @@ export async function deleteContact(id: string) {
     await adminDb.collection('contacts').doc(id).delete();
     return { success: true };
   } catch (error) {
-    console.error('Error deleting contact:', error);
     return { success: false };
   }
 }
@@ -168,65 +149,9 @@ export async function deleteContact(id: string) {
 export async function markContactAsRead(id: string) {
   if (!adminDb) return { success: false };
   try {
-    await adminDb.collection('contacts').doc(id).update({
-      status: 'read'
-    });
+    await adminDb.collection('contacts').doc(id).update({ status: 'read' });
     return { success: true };
   } catch (error) {
-    console.error('Error marking contact as read:', error);
     return { success: false };
-  }
-}
-
-export async function searchProperties(filters: InterpretSearchQueryOutput) {
-  if (!adminDb) return [];
-
-  try {
-    const snapshot = await adminDb.collection('properties').get();
-    let properties = snapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate?.().toISOString() || null,
-        updatedAt: data.updatedAt?.toDate?.().toISOString() || null,
-      };
-    });
-
-    if (filters.propertyType && filters.propertyType.length > 0) {
-      properties = properties.filter(p =>
-        filters.propertyType!.some(type =>
-          p.propertyType?.toLowerCase().includes(type.toLowerCase()) ||
-          type.toLowerCase().includes(p.propertyType?.toLowerCase() || '')
-        )
-      );
-    }
-
-    if (filters.bedrooms) {
-      properties = properties.filter(p => (Number(p.beds) || 0) >= filters.bedrooms!);
-    }
-
-    if (filters.location) {
-      const loc = filters.location.toLowerCase();
-      properties = properties.filter(p =>
-        p.address?.toLowerCase().includes(loc) ||
-        p.title?.toLowerCase().includes(loc) ||
-        loc.includes(p.address?.toLowerCase() || '')
-      );
-    }
-
-    if (filters.features && filters.features.length > 0) {
-      properties = properties.filter(p =>
-        filters.features!.some(feature =>
-          p.description?.toLowerCase().includes(feature.toLowerCase()) ||
-          p.title?.toLowerCase().includes(feature.toLowerCase())
-        )
-      );
-    }
-
-    return properties;
-  } catch (error) {
-    console.error('Search error:', error);
-    return [];
   }
 }
