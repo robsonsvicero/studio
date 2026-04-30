@@ -39,8 +39,9 @@ export default function ContactsPage() {
     
     setProcessingId(id);
     try {
-      const response = await fetch(getApiUrl(`/api/admin/contacts?id=${id}`), {
-        method: 'DELETE'
+      // Mudado para POST para evitar erro de CORS
+      const response = await fetch(getApiUrl(`/api/admin/contacts?id=${id}&action=delete`), {
+        method: 'POST'
       });
       const result = await response.json();
       if (result.success) {
@@ -57,8 +58,9 @@ export default function ContactsPage() {
     if (currentStatus === 'read') return;
     
     try {
-      const response = await fetch(getApiUrl(`/api/admin/contacts?id=${id}`), {
-        method: 'PATCH'
+      // Mudado para POST para evitar erro de CORS
+      const response = await fetch(getApiUrl(`/api/admin/contacts?id=${id}&action=read`), {
+        method: 'POST'
       });
       const result = await response.json();
       if (result.success) {

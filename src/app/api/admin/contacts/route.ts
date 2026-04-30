@@ -7,13 +7,12 @@ function corsResponse(data: any, status: number = 200) {
     status,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },
   });
 }
 
-// Lidar com o Preflight do navegador (OPTIONS)
 export async function OPTIONS() {
   return corsResponse({}, 200);
 }
@@ -48,30 +47,25 @@ export async function GET() {
   }
 }
 
-export async function DELETE(request: Request) {
+// Usando apenas POST para evitar problemas de CORS com DELETE/PATCH
+export async function POST(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
+  const action = searchParams.get('action'); // 'delete' ou 'read'
 
   if (!id || !adminDb) return corsResponse({ success: false }, 400);
 
   try {
-    await adminDb.collection('contacts').doc(id).delete();
-    return corsResponse({ success: true });
+    if (action === 'delete') {
+      await adminDb.collection('contacts').doc(id).delete();
+      return corsResponse({ success: true });
+    } else if (action === 'read') {
+      await adminDb.collection('contacts').doc(id).update({ status: 'read' });
+      return corsResponse({ success: true });
+    }
+    return corsResponse({ success: false, error: 'Invalid action' }, 400);
   } catch (error) {
-    return corsResponse({ success: false }, 500);
-  }
-}
-
-export async function PATCH(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-
-  if (!id || !adminDb) return corsResponse({ success: false }, 400);
-
-  try {
-    await adminDb.collection('contacts').doc(id).update({ status: 'read' });
-    return corsResponse({ success: true });
-  } catch (error) {
+    console.error('API Error:', error);
     return corsResponse({ success: false }, 500);
   }
 }
