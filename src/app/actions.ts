@@ -5,6 +5,9 @@ import { aiConcierge } from '@/ai/flows/ai-concierge-flow';
 import { z } from 'zod';
 import { adminDb } from '@/lib/firebase/admin';
 import { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-query-flow';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const AskQuestionSchema = z.object({
   question: z.string().min(5, 'A pergunta deve ter pelo menos 5 caracteres.'),
@@ -73,10 +76,52 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
 
     try {
         const { responseToUser, summaryForAgent } = await aiConcierge(validatedFields.data);
-        // In a real app, you would now email summaryForAgent to the agent or save to a CRM.
+        
+        // Salva no Firestore se o banco estiver disponível
+        if (adminDb) {
+            await adminDb.collection('contacts').add({
+                ...validatedFields.data,
+                aiSummary: summaryForAgent,
+                createdAt: new Date(),
+                status: 'new'
+            });
+        }
+
+        // Envia notificação por e-mail para o corretor
+        try {
+            await resend.emails.send({
+                from: 'André Barbosa Imóveis <contato@andrebarbosaimoveis.com.br>',
+                to: 'contato@andrebarbosaimoveis.com.br',
+                subject: `🆕 Novo Lead: ${validatedFields.data.name}`,
+                html: `
+                    <div style="font-family: sans-serif; padding: 20px; color: #333;">
+                        <h2 style="color: #4a5d4a;">Novo Contato Recebido!</h2>
+                        <p><strong>Nome:</strong> ${validatedFields.data.name}</p>
+                        <p><strong>E-mail:</strong> ${validatedFields.data.email}</p>
+                        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+                        <p><strong>Mensagem:</strong></p>
+                        <blockquote style="background: #f9f9f9; padding: 15px; border-left: 4px solid #4a5d4a;">
+                            ${validatedFields.data.message}
+                        </blockquote>
+                        <div style="margin-top: 20px; padding: 15px; background: #efebe1; rounded: 10px;">
+                            <p style="margin: 0; font-size: 12px; color: #666;"><strong>Resumo da IA:</strong></p>
+                            <p style="margin: 5px 0 0 0;">${summaryForAgent}</p>
+                        </div>
+                        <p style="margin-top: 30px; font-size: 14px;">
+                            <a href="https://andrebarbosaimoveis.com.br/admin/contacts" style="background: #4a5d4a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                                Ver no Painel Admin
+                            </a>
+                        </p>
+                    </div>
+                `
+            });
+        } catch (mailError) {
+            console.error('Falha ao enviar e-mail de notificação:', mailError);
+        }
+
         return { 
             response: responseToUser,
-            summary: summaryForAgent, // For potential debug/display
+            summary: summaryForAgent,
             errors: null,
             submitted: true 
         };

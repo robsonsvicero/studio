@@ -3,7 +3,7 @@
 import { useAuth } from '@/hooks/use-auth';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Building, Plus, LogOut, Loader2 } from 'lucide-react';
+import { Home, Building, Plus, LogOut, Loader2, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -26,6 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { name: 'Dashboard', href: '/admin', icon: Home },
+    { name: 'Contatos', href: '/admin/contacts', icon: MessageSquare },
     { name: 'Novo Imóvel', href: '/admin/properties/new', icon: Plus },
     { name: 'Ver Site', href: '/', icon: Building },
   ];
