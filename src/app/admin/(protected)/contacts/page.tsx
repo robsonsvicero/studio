@@ -7,7 +7,6 @@ import { Mail, Calendar, User, MessageSquare, Loader2, Trash2, CheckCircle2, Ale
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { getApiUrl } from '@/lib/api-utils';
-import { deleteContact, markContactAsRead } from '@/app/actions';
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<any[]>([]);
@@ -23,7 +22,6 @@ export default function ContactsPage() {
       const response = await fetch(getApiUrl('/api/admin/contacts'));
       const data = await response.json();
       if (Array.isArray(data)) {
-        // Ordenar por data (mais recentes primeiro)
         const sortedData = data.sort((a, b) => 
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
@@ -41,7 +39,10 @@ export default function ContactsPage() {
     
     setProcessingId(id);
     try {
-      const result = await deleteContact(id);
+      const response = await fetch(getApiUrl(`/api/admin/contacts?id=${id}`), {
+        method: 'DELETE'
+      });
+      const result = await response.json();
       if (result.success) {
         setContacts(contacts.filter(c => c.id !== id));
       }
@@ -56,7 +57,10 @@ export default function ContactsPage() {
     if (currentStatus === 'read') return;
     
     try {
-      const result = await markContactAsRead(id);
+      const response = await fetch(getApiUrl(`/api/admin/contacts?id=${id}`), {
+        method: 'PATCH'
+      });
+      const result = await response.json();
       if (result.success) {
         setContacts(contacts.map(c => 
           c.id === id ? { ...c, status: 'read' } : c
@@ -151,7 +155,10 @@ export default function ContactsPage() {
                       variant="ghost" 
                       size="icon" 
                       className="text-muted-foreground hover:text-destructive transition-colors"
-                      onClick={() => handleDelete(contact.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(contact.id);
+                      }}
                       disabled={processingId === contact.id}
                     >
                       {processingId === contact.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}

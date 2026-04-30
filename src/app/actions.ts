@@ -1,5 +1,3 @@
-'use server';
-
 import { z } from 'zod';
 import { adminDb } from '@/lib/firebase/admin';
 import { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-query-flow';
