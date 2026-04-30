@@ -15,9 +15,7 @@ import {
   CarFront, 
   MapPin, 
   MessageSquare,
-  PawPrint,
-  Building,
-  Armchair,
+  Check,
   Loader2
 } from 'lucide-react';
 import { PropertyGallery } from '@/components/property-gallery';
@@ -67,76 +65,131 @@ function PropertyDetailsContent() {
     );
   }
 
-  const formattedPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.price || 0);
-  const whatsappNumber = "5511999998888";
+  const formattedPrice = new Intl.NumberFormat('pt-BR', { 
+    style: 'currency', 
+    currency: 'BRL',
+    maximumFractionDigits: 0 
+  }).format(property.price || 0);
+
+  const whatsappNumber = "5511919572716";
   const whatsappMessage = encodeURIComponent(`Olá! Vi o imóvel "${property.title}" no seu site e gostaria de mais informações.`);
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
   return (
-    <main className="flex-grow pt-24 pb-16">
+    <main className="flex-grow pt-28 pb-16">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <PropertyGallery images={property.images} title={property.title} />
-            <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Lado Esquerdo: Galeria e Detalhes (Col 8) */}
+          <div className="lg:col-span-8 space-y-8">
+            <div className="rounded-3xl overflow-hidden shadow-sm">
+                <PropertyGallery images={property.images} title={property.title} />
+            </div>
+            
+            <div className="space-y-6">
               <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary" className="text-sm px-3 py-1">
+                <Badge className="bg-primary/10 text-primary border-none text-xs uppercase tracking-wider px-3 py-1">
                   {property.transactionType?.toLowerCase() === 'venda' ? 'Venda' : 'Aluguel'}
                 </Badge>
-                <Badge variant="outline" className="text-sm px-3 py-1">
+                <Badge variant="outline" className="text-xs uppercase tracking-wider px-3 py-1 border-primary/20">
                   {property.propertyType}
                 </Badge>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold">{property.title}</h1>
-              <div className="flex items-center text-muted-foreground">
+              
+              <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary">{property.title}</h1>
+              
+              <div className="flex items-center text-muted-foreground/80">
                 <MapPin className="h-5 w-5 mr-2 flex-shrink-0" />
                 <span className="text-lg">{property.address}</span>
               </div>
-            </div>
-            <Separator />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-4">
-              <div className="flex flex-col items-center p-4 bg-muted/50 rounded-xl space-y-2">
-                <BedDouble className="h-6 w-6 text-primary" />
-                <span className="text-sm text-muted-foreground">Quartos</span>
-                <span className="font-bold text-lg">{property.beds || 0}</span>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4">
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-primary/70">
+                        <BedDouble size={18} />
+                        <span className="text-sm font-medium">Quartos</span>
+                    </div>
+                    <span className="text-xl font-bold">{property.beds || 0}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-primary/70">
+                        <Bath size={18} />
+                        <span className="text-sm font-medium">Suítes</span>
+                    </div>
+                    <span className="text-xl font-bold">{property.suites || property.baths || 0}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-primary/70">
+                        <CarFront size={18} />
+                        <span className="text-sm font-medium">Vagas</span>
+                    </div>
+                    <span className="text-xl font-bold">{property.parkingSpaces || 0}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-primary/70">
+                        <Ruler size={18} />
+                        <span className="text-sm font-medium">Área</span>
+                    </div>
+                    <span className="text-xl font-bold">{property.sqft || 0}m²</span>
+                </div>
               </div>
-              <div className="flex flex-col items-center p-4 bg-muted/50 rounded-xl space-y-2">
-                <Bath className="h-6 w-6 text-primary" />
-                <span className="text-sm text-muted-foreground">Banheiros</span>
-                <span className="font-bold text-lg">{property.baths || 0}</span>
+
+              <Separator className="bg-primary/10" />
+              
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold text-primary">Descrição</h2>
+                <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-lg">
+                  {property.description}
+                </div>
               </div>
-              <div className="flex flex-col items-center p-4 bg-muted/50 rounded-xl space-y-2">
-                <CarFront className="h-6 w-6 text-primary" />
-                <span className="text-sm text-muted-foreground">Vagas</span>
-                <span className="font-bold text-lg">{property.parkingSpaces || 0}</span>
-              </div>
-              <div className="flex flex-col items-center p-4 bg-muted/50 rounded-xl space-y-2">
-                <Ruler className="h-6 w-6 text-primary" />
-                <span className="text-sm text-muted-foreground">Área Útil</span>
-                <span className="font-bold text-lg">{property.sqft || 0}m²</span>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Descrição do Imóvel</h2>
-              <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-lg">
-                {property.description}
-              </div>
-            </div>
-          </div>
-          <div className="lg:col-span-1">
-            <div className="sticky top-28 p-6 border rounded-2xl shadow-xl bg-card space-y-6">
-              <div className="space-y-1">
-                <span className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Valor do Investimento</span>
-                <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
-              </div>
-              <Button asChild className="w-full h-14 text-lg font-bold" size="lg">
-                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                  <MessageSquare className="mr-2 h-6 w-6" />
-                  TENHO INTERESSE
-                </a>
-              </Button>
             </div>
           </div>
+
+          {/* Lado Direito: Card de Ação (Col 4) */}
+          <div className="lg:col-span-4 lg:sticky lg:top-28">
+            <div className="bg-[#efebe1] rounded-[40px] p-8 md:p-10 shadow-sm border border-black/5 space-y-8">
+              
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/50">Valor do Investimento</span>
+                <div className="text-3xl md:text-4xl font-bold text-primary">{formattedPrice}</div>
+              </div>
+
+              <div className="space-y-4">
+                <Button 
+                    asChild 
+                    className="w-full h-16 text-sm font-bold tracking-widest bg-[#4a5d4a] hover:bg-[#3d4d3d] text-white rounded-2xl shadow-lg transition-all active:scale-[0.98]" 
+                >
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3">
+                    <MessageSquare size={20} />
+                    TENHO INTERESSE
+                  </a>
+                </Button>
+                <p className="text-[10px] text-center text-primary/40">
+                    Ao clicar, você será redirecionado para o WhatsApp do corretor.
+                </p>
+              </div>
+
+              <div className="space-y-5 pt-4">
+                <h3 className="text-sm font-bold text-primary">Por que este imóvel?</h3>
+                <ul className="space-y-4">
+                  {[
+                    "Localização privilegiada e segura",
+                    "Imóvel verificado e pronto para morar",
+                    "Negociação direta e transparente"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 group">
+                        <div className="mt-1 bg-primary/10 rounded-full p-0.5 group-hover:bg-primary/20 transition-colors">
+                            <Check size={12} className="text-primary" />
+                        </div>
+                        <span className="text-sm text-primary/70 leading-tight">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </main>
@@ -145,10 +198,10 @@ function PropertyDetailsContent() {
 
 export default function PropertyDetailsPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-[#f5f1e6]">
       <Header />
       <React.Suspense fallback={
-        <div className="flex-grow flex items-center justify-center pt-24">
+        <div className="flex-grow flex items-center justify-center pt-24 bg-[#f5f1e6]">
           <Loader2 className="animate-spin h-10 w-10 text-primary" />
         </div>
       }>
