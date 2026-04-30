@@ -3,10 +3,10 @@
 import { useAuth } from '@/hooks/use-auth';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Building, Plus, LogOut, Loader2, MessageSquare } from 'lucide-react';
+import { Home, Building, Plus, LogOut, Loader2, MessageSquare, Menu, X, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getApiUrl } from '@/lib/api-utils';
 import { ContactsProvider, useContacts } from '@/contexts/contacts-context';
 
@@ -14,6 +14,7 @@ function AdminSidebar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const { unreadCount, setUnreadCount } = useContacts();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -26,9 +27,7 @@ function AdminSidebar() {
           const count = data.filter((c: any) => c.status !== 'read').length;
           setUnreadCount(count);
         }
-      } catch (error) {
-        // Falha silenciosa — não travar o layout
-      }
+      } catch (error) {}
     }
 
     fetchUnreadCount();
@@ -36,73 +35,92 @@ function AdminSidebar() {
     return () => clearInterval(interval);
   }, [user, setUnreadCount]);
 
-  return (
-    <aside className="w-64 bg-background border-r flex flex-col">
-      <div className="h-16 flex items-center px-6 border-b">
+  // Fecha o menu ao navegar
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  const navItems = [
+    { href: '/admin', label: 'Dashboard', icon: Home },
+    { href: '/admin/contacts', label: 'Contatos', icon: MessageSquare, badge: unreadCount },
+    { href: '/admin/properties/new', label: 'Novo Imóvel', icon: Plus },
+    { href: '/', label: 'Ver Site', icon: Building },
+  ];
+
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      <div className="h-16 flex items-center justify-between px-6 border-b flex-shrink-0">
         <span className="font-bold text-xl tracking-tight">Admin<span className="text-primary">Panel</span></span>
+        {/* Botão fechar — só mobile */}
+        <button
+          onClick={() => setIsOpen(false)}
+          className="md:hidden p-1 rounded-md text-muted-foreground hover:text-foreground"
+        >
+          <X size={20} />
+        </button>
       </div>
-      <nav className="flex-1 p-4 space-y-1">
-        {/* Dashboard */}
-        <Link href="/admin">
-          <span className={cn(
-            "flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
-            pathname === '/admin' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}>
-            <Home className={cn("mr-3 h-5 w-5", pathname === '/admin' ? "text-primary" : "text-muted-foreground")} />
-            Dashboard
-          </span>
-        </Link>
-
-        {/* Contatos — com badge em tempo real */}
-        <Link href="/admin/contacts">
-          <span className={cn(
-            "flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
-            pathname === '/admin/contacts' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}>
-            <span className="flex items-center">
-              <MessageSquare className={cn("mr-3 h-5 w-5", pathname === '/admin/contacts' ? "text-primary" : "text-muted-foreground")} />
-              Contatos
-            </span>
-            {unreadCount > 0 && (
-              <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-orange-500 text-white">
-                {unreadCount > 99 ? '99+' : unreadCount}
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {navItems.map((item) => (
+          <Link key={item.href} href={item.href}>
+            <span className={cn(
+              "flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
+              pathname === item.href
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}>
+              <span className="flex items-center">
+                <item.icon className={cn("mr-3 h-5 w-5", pathname === item.href ? "text-primary" : "text-muted-foreground")} />
+                {item.label}
               </span>
-            )}
-          </span>
-        </Link>
-
-        {/* Novo Imóvel */}
-        <Link href="/admin/properties/new">
-          <span className={cn(
-            "flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
-            pathname === '/admin/properties/new' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}>
-            <Plus className={cn("mr-3 h-5 w-5", pathname === '/admin/properties/new' ? "text-primary" : "text-muted-foreground")} />
-            Novo Imóvel
-          </span>
-        </Link>
-
-        {/* Ver Site */}
-        <Link href="/">
-          <span className={cn(
-            "flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
-            pathname === '/' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}>
-            <Building className={cn("mr-3 h-5 w-5", pathname === '/' ? "text-primary" : "text-muted-foreground")} />
-            Ver Site
-          </span>
-        </Link>
+              {item.badge > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-orange-500 text-white">
+                  {item.badge > 99 ? '99+' : item.badge}
+                </span>
+              )}
+            </span>
+          </Link>
+        ))}
       </nav>
-      <div className="p-4 border-t">
-        <div className="mb-4 px-3 text-sm text-muted-foreground truncate">
-          {user?.email}
-        </div>
+      <div className="p-4 border-t flex-shrink-0">
+        <div className="mb-4 px-3 text-sm text-muted-foreground truncate">{user?.email}</div>
         <Button variant="outline" className="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50" onClick={logout}>
           <LogOut className="mr-3 h-5 w-5" />
           Sair
         </Button>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Botão hambúrguer — só mobile */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className={cn(
+          "md:hidden fixed top-4 left-4 z-40 p-2 rounded-md bg-background border shadow-sm text-foreground",
+          isOpen && "hidden"
+        )}
+      >
+        <Menu size={20} />
+      </button>
+
+      {/* Overlay — só mobile quando aberto */}
+      {isOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar — fixo no desktop, flutuante no mobile */}
+      <aside className={cn(
+        "fixed md:relative inset-y-0 left-0 z-50 w-64 bg-background border-r flex flex-col transition-transform duration-300",
+        "md:translate-x-0 md:flex",
+        isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      )}>
+        <SidebarContent />
+      </aside>
+    </>
   );
 }
 
@@ -124,7 +142,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex min-h-screen bg-muted/20">
         <AdminSidebar />
         <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-8">
+          <div className="flex-1 overflow-y-auto p-4 md:p-8 pt-16 md:pt-8">
             {children}
           </div>
         </main>

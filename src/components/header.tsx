@@ -45,7 +45,7 @@ export function Header() {
           : 'absolute bg-transparent'
       )}
     >
-      <div className="container mx-auto grid grid-cols-3 h-20 items-center">
+      <div className="container mx-auto grid grid-cols-2 md:grid-cols-3 h-20 items-center">
         {/* Logo à esquerda */}
         <div className="flex justify-start">
           <Link href="/">
@@ -133,19 +133,19 @@ export function Header() {
           )}
         </div>
 
-        {/* Botão de Contato à direita */}
-        <div className="flex justify-end">
+        {/* Botão de WhatsApp — visível apenas no desktop */}
+        <div className="hidden md:flex justify-end">
           <Button
             variant={!isScrolled ? "outline" : "default"}
             className={cn(
-              'transition-all font-medium h-11 px-4 md:px-6',
+              'transition-all font-medium h-11 px-6',
               !isScrolled && 'bg-primary border-transparent text-primary-foreground hover:bg-primary/90'
             )}
             asChild
           >
             <a href="https://wa.me/5511919572716" target="_blank" rel="noopener noreferrer">
-              <MessageSquare className="h-5 w-5 md:mr-2" />
-              <span className="hidden md:inline">WHATSAPP</span>
+              <MessageSquare className="h-5 w-5 mr-2" />
+              WHATSAPP
             </a>
           </Button>
         </div>
