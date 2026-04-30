@@ -6,12 +6,29 @@ export async function GET() {
 
   try {
     const snapshot = await adminDb.collection('contacts').get();
-    const contacts = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const contacts = snapshot.docs.map(doc => {
+      const data = doc.data();
+      // Garantir que a data seja um formato que o Javascript entenda (ISO String)
+      let createdAt = new Date().toISOString();
+      if (data.createdAt) {
+        if (typeof data.createdAt.toDate === 'function') {
+          createdAt = data.createdAt.toDate().toISOString();
+        } else if (data.createdAt.seconds) {
+          createdAt = new Date(data.createdAt.seconds * 1000).toISOString();
+        } else {
+          createdAt = new Date(data.createdAt).toISOString();
+        }
+      }
+
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: createdAt
+      };
+    });
     return NextResponse.json(contacts);
   } catch (error) {
+    console.error('Error fetching contacts:', error);
     return NextResponse.json({ error: 'Failed to fetch contacts' }, { status: 500 });
   }
 }

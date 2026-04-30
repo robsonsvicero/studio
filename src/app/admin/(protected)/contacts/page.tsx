@@ -142,7 +142,13 @@ export default function ContactsPage() {
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Calendar size={14} />
-                        {format(new Date(contact.createdAt), "dd 'de' MMM, HH:mm", { locale: ptBR })}
+                        {(() => {
+                          try {
+                            return format(new Date(contact.createdAt), "dd 'de' MMM, HH:mm", { locale: ptBR });
+                          } catch (e) {
+                            return 'Data indisponível';
+                          }
+                        })()}
                       </div>
                     </div>
                   </div>
