@@ -93,9 +93,9 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
             console.log('Iniciando envio de e-mail via Resend...');
             try {
                 const mailData = await resend.emails.send({
-                from: 'André Barbosa Imóveis <onboarding@resend.dev>',
-                to: 'contato@andrebarbosaimoveis.com.br',
-                subject: `🆕 Novo Lead: ${validatedFields.data.name}`,
+                    from: 'André Barbosa Imóveis <contato@andrebarbosaimoveis.com.br>',
+                    to: 'contato@andrebarbosaimoveis.com.br',
+                    subject: `🆕 Novo Lead: ${validatedFields.data.name}`,
                 html: `
                     <div style="font-family: sans-serif; padding: 20px; color: #333;">
                         <h2 style="color: #4a5d4a;">Novo Contato Recebido!</h2>
