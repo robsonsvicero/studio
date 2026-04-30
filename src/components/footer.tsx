@@ -101,9 +101,8 @@ export function Footer() {
                  <Image
                    src={logoImage.imageUrl}
                    alt="André Barbosa Imóveis Logo"
-                   width={180}
-                   height={40}
-                   style={{ height: 'auto', width: 'auto' }}
+                   width={455}
+                   height={100}
                    data-ai-hint={logoImage.imageHint}
                  />
                )}
@@ -112,14 +111,28 @@ export function Footer() {
               Realizando sonhos e construindo futuros na maior metrópole do país.
             </p>
             <p className="font-semibold">São Paulo, SP</p>
-            <p className="text-primary-foreground/80">(11) 99999-8888</p>
-            <p className="text-primary-foreground/80">contato@andrebarbosaimoveis.com</p>
+            <a href="tel:11919572716" className="text-primary-foreground/80 hover:text-accent transition-colors block">(11) 91957-2716</a>
+            <a href="mailto:contato@andrebarbosaimoveis.com.br" className="text-primary-foreground/80 hover:text-accent transition-colors block">contato@andrebarbosaimoveis.com.br</a>
           </div>
         </div>
       </div>
       <div className="bg-primary/90">
-        <div className="container mx-auto px-4 py-4 text-center text-sm text-primary-foreground/60">
-          &copy; {new Date().getFullYear()} André Barbosa Imóveis. Todos os direitos reservados.
+        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left text-sm text-primary-foreground/60">
+          <div>
+            &copy; {new Date().getFullYear()} André Barbosa Imóveis. Todos os direitos reservados.
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="opacity-80">Desenvolvido por</span>
+            <Link href="https://svicero.studio" target="_blank" className="transition-opacity hover:opacity-100 opacity-80">
+              <Image 
+                src="/assets/logo_svicero-studio.png" 
+                alt="Svicero Studio" 
+                width={100} 
+                height={20}
+                style={{ height: 'auto', width: 'auto' }}
+              />
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

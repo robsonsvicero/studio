@@ -7,7 +7,7 @@
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
-    "build:static": "powershell -Command \"$env:NEXT_PUBLIC_STATIC_EXPORT='true'; if (Test-Path src/app/api) { Move-Item src/app/api src/api_routes -Force }; next build; if (Test-Path src/api_routes) { Move-Item src/api_routes src/app/api -Force }; $env:NEXT_PUBLIC_STATIC_EXPORT=''\"",
+    "build:static": "powershell -Command \"$env:NEXT_PUBLIC_STATIC_EXPORT='true'; if (Test-Path src/app/api) { Move-Item src/app/api src/api_routes -Force }; next build; node scripts/generate-htaccess.js; if (Test-Path src/api_routes) { Move-Item src/api_routes src/app/api -Force }; $env:NEXT_PUBLIC_STATIC_EXPORT=''\"",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"

@@ -57,7 +57,7 @@ export function Header() {
                 height={66}
                 style={{ height: 'auto', width: 'auto' }}
                 data-ai-hint={displayLogo.imageHint}
-                className="w-auto h-12 md:h-14"
+                className="w-auto h-12 md:h-11"
                 priority
               />
             )}
@@ -118,11 +118,11 @@ export function Header() {
                     </div>
                   </div>
                   <div className="border-t p-6 space-y-4 flex flex-col items-center">
-                      <a href="tel:11999998888" className="flex items-center gap-3 text-foreground/80 hover:text-primary">
+                      <a href="tel:11919572716" className="flex items-center gap-3 text-foreground/80 hover:text-primary">
                           <Phone size={20}/>
-                          <span>(11) 99999-8888</span>
+                          <span>(11) 91957-2716</span>
                       </a>
-                      <a href="https://wa.me/5511999998888" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground/80 hover:text-primary">
+                      <a href="https://wa.me/5511919572716" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground/80 hover:text-primary">
                           <MessageSquare size={20}/>
                           <span>Whatsapp</span>
                       </a>
@@ -143,7 +143,7 @@ export function Header() {
             )}
             asChild
           >
-            <a href="https://wa.me/5511999998888" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/5511919572716" target="_blank" rel="noopener noreferrer">
               <MessageSquare className="h-5 w-5 md:mr-2" />
               <span className="hidden md:inline">WHATSAPP</span>
             </a>
