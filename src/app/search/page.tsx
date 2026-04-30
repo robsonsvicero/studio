@@ -10,6 +10,7 @@ import type { InterpretSearchQueryOutput } from '@/ai/flows/interpret-search-que
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { getApiUrl } from '@/lib/api-utils';
+import { PropertyCard } from '@/components/property-card';
 
 function SearchResults() {
   const searchParams = useSearchParams();

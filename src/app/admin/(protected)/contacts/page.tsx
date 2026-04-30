@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Mail, Calendar, User, MessageSquare, Loader2, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, Calendar, User, MessageSquare, Loader2, Trash2, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { getApiUrl } from '@/lib/api-utils';
@@ -177,7 +177,7 @@ export default function ContactsPage() {
                   </div>
                 </div>
                 
-                <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="mt-6">
                   <div className="p-4 bg-muted/30 rounded-lg border border-muted/50">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
                       <MessageSquare size={12} />
@@ -187,18 +187,6 @@ export default function ContactsPage() {
                       "{contact.message}"
                     </p>
                   </div>
-
-                  {contact.aiSummary && (
-                    <div className="p-4 bg-primary/5 rounded-lg border border-primary/10">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-primary/60 mb-2 flex items-center gap-2">
-                        <CheckCircle2 size={12} />
-                        Resumo da IA (Concierge)
-                      </div>
-                      <p className="text-sm text-primary/80">
-                        {contact.aiSummary}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             </Card>
