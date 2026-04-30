@@ -39,6 +39,11 @@ function PropertyDetailsContent() {
         if (!response.ok) throw new Error('Property not found');
         const data = await response.json();
         setProperty(data);
+        
+        // Atualiza o título da aba do navegador dinamicamente no cliente
+        if (data.title) {
+          document.title = `${data.title} | André Barbosa Imóveis`;
+        }
       } catch (error) {
         console.error('Error:', error);
       } finally {

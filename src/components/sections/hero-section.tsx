@@ -30,7 +30,7 @@ export function HeroSection() {
         </p>
         <Card className="max-w-3xl mx-auto bg-background/80 backdrop-blur-sm border-none">
           <CardContent className="p-4">
-            <form action="/search" method="GET" className="flex gap-4 items-center">
+            <form action="/search" method="GET" className="flex flex-col md:flex-row gap-3 md:gap-4 items-center">
               <Input
                 name="q"
                 placeholder="Quero um apartamento perto de uma escola boa, com vista para o parque..."
