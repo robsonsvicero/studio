@@ -107,7 +107,7 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
       console.log('Tentando enviar e-mail via Resend...');
       try {
         const mailData = await resend.emails.send({
-          from: 'André Barbosa Imóveis <contato@andrebarbosaimoveis.com.br>',
+          from: 'André Barbosa Imóveis <onboarding@resend.dev>',
           to: 'contato@andrebarbosaimoveis.com.br',
           subject: `🆕 Novo Lead: ${validatedFields.data.name}`,
           html: `
@@ -151,6 +151,30 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
       errors: null,
       submitted: false,
     };
+  }
+}
+
+export async function deleteContact(id: string) {
+  if (!adminDb) return { success: false };
+  try {
+    await adminDb.collection('contacts').doc(id).delete();
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting contact:', error);
+    return { success: false };
+  }
+}
+
+export async function markContactAsRead(id: string) {
+  if (!adminDb) return { success: false };
+  try {
+    await adminDb.collection('contacts').doc(id).update({
+      status: 'read'
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error marking contact as read:', error);
+    return { success: false };
   }
 }
 
