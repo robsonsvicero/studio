@@ -90,8 +90,9 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
 
         // Envia notificação por e-mail para o corretor se o Resend estiver configurado
         if (resend) {
+            console.log('Iniciando envio de e-mail via Resend...');
             try {
-                await resend.emails.send({
+                const mailData = await resend.emails.send({
                 from: 'André Barbosa Imóveis <contato@andrebarbosaimoveis.com.br>',
                 to: 'contato@andrebarbosaimoveis.com.br',
                 subject: `🆕 Novo Lead: ${validatedFields.data.name}`,
@@ -117,6 +118,7 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
                     </div>
                 `
             });
+            console.log('E-mail enviado com sucesso:', mailData);
         } catch (mailError) {
             console.error('Falha ao enviar e-mail de notificação:', mailError);
         }
