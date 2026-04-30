@@ -10,7 +10,7 @@ import { Resend } from 'resend';
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 if (!resend) {
-    console.warn('⚠️ ATENÇÃO: RESEND_API_KEY não foi encontrada nas variáveis de ambiente da Vercel!');
+    console.warn('⚠️ ATENÇÃO: RESEND_API_KEY não foi encontrada!');
 } else {
     console.log('✅ Resend inicializado com a chave que começa com:', process.env.RESEND_API_KEY?.substring(0, 7));
 }
@@ -60,7 +60,7 @@ export async function askAiAssistant(
     const result = await aiPropertyInquiryAssistant({ question: validatedFields.data.question });
     return { message: result.answer, error: false };
   } catch (e) {
-    return { message: 'Ocorreu um erro ao contatar o assistente. Tente novamente mais tarde.', error: true };
+    return { message: 'Ocorreu um erro ao contatar o assistente.', error: true };
   }
 }
 
@@ -79,10 +79,20 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
     };
   }
 
-  try {
-    const { responseToUser, summaryForAgent } = await aiConcierge(validatedFields.data);
+  let responseToUser = 'Obrigado pelo contato! Recebemos sua mensagem e retornaremos em breve.';
+  let summaryForAgent = 'Nenhum resumo disponível (IA temporariamente indisponível).';
 
-    // 1. Salvar no Firestore
+  try {
+    // Tenta usar a IA, mas não trava se ela falhar
+    try {
+      const aiResult = await aiConcierge(validatedFields.data);
+      responseToUser = aiResult.responseToUser;
+      summaryForAgent = aiResult.summaryForAgent;
+    } catch (aiError) {
+      console.warn('AI Concierge falhou (provavelmente 503 da Google). Continuando sem IA...', aiError);
+    }
+
+    // 1. Salvar no Firestore (Sempre acontece agora)
     if (adminDb) {
       await adminDb.collection('contacts').add({
         ...validatedFields.data,
@@ -92,7 +102,7 @@ export async function submitContactForm(prevState: ContactState, formData: FormD
       });
     }
 
-    // 2. Enviar Notificação por E-mail
+    // 2. Enviar Notificação por E-mail (Sempre acontece agora)
     if (resend) {
       try {
         await resend.emails.send({
