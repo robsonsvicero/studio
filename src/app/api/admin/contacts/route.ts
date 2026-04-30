@@ -1,14 +1,30 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 
+// Função para lidar com o CORS
+function corsResponse(data: any, status: number = 200) {
+  return NextResponse.json(data, {
+    status,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
+// Lidar com o Preflight do navegador (OPTIONS)
+export async function OPTIONS() {
+  return corsResponse({}, 200);
+}
+
 export async function GET() {
-  if (!adminDb) return NextResponse.json({ error: 'Database not initialized' }, { status: 500 });
+  if (!adminDb) return corsResponse({ error: 'Database not initialized' }, 500);
 
   try {
     const snapshot = await adminDb.collection('contacts').get();
     const contacts = snapshot.docs.map(doc => {
       const data = doc.data();
-      // Garantir que a data seja um formato que o Javascript entenda (ISO String)
       let createdAt = new Date().toISOString();
       if (data.createdAt) {
         if (typeof data.createdAt.toDate === 'function') {
@@ -26,10 +42,9 @@ export async function GET() {
         createdAt: createdAt
       };
     });
-    return NextResponse.json(contacts);
+    return corsResponse(contacts);
   } catch (error) {
-    console.error('Error fetching contacts:', error);
-    return NextResponse.json({ error: 'Failed to fetch contacts' }, { status: 500 });
+    return corsResponse({ error: 'Failed to fetch contacts' }, 500);
   }
 }
 
@@ -37,13 +52,13 @@ export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
 
-  if (!id || !adminDb) return NextResponse.json({ success: false }, { status: 400 });
+  if (!id || !adminDb) return corsResponse({ success: false }, 400);
 
   try {
     await adminDb.collection('contacts').doc(id).delete();
-    return NextResponse.json({ success: true });
+    return corsResponse({ success: true });
   } catch (error) {
-    return NextResponse.json({ success: false }, { status: 500 });
+    return corsResponse({ success: false }, 500);
   }
 }
 
@@ -51,12 +66,12 @@ export async function PATCH(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
 
-  if (!id || !adminDb) return NextResponse.json({ success: false }, { status: 400 });
+  if (!id || !adminDb) return corsResponse({ success: false }, 400);
 
   try {
     await adminDb.collection('contacts').doc(id).update({ status: 'read' });
-    return NextResponse.json({ success: true });
+    return corsResponse({ success: true });
   } catch (error) {
-    return NextResponse.json({ success: false }, { status: 500 });
+    return corsResponse({ success: false }, 500);
   }
 }
