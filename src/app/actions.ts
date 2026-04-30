@@ -9,6 +9,12 @@ import { Resend } from 'resend';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
+if (!resend) {
+    console.warn('⚠️ ATENÇÃO: RESEND_API_KEY não foi encontrada nas variáveis de ambiente da Vercel!');
+} else {
+    console.log('✅ Resend inicializado com a chave que começa com:', process.env.RESEND_API_KEY?.substring(0, 7));
+}
+
 const AskQuestionSchema = z.object({
   question: z.string().min(5, 'A pergunta deve ter pelo menos 5 caracteres.'),
 });
