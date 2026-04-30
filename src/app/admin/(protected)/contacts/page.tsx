@@ -7,11 +7,13 @@ import { Mail, Calendar, User, MessageSquare, Loader2, Trash2, CheckCircle2, Ale
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { getApiUrl } from '@/lib/api-utils';
+import { useContacts } from '@/contexts/contacts-context';
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const { decrementUnread } = useContacts();
 
   useEffect(() => {
     fetchContacts();
@@ -58,7 +60,6 @@ export default function ContactsPage() {
     if (currentStatus === 'read') return;
     
     try {
-      // Mudado para POST para evitar erro de CORS
       const response = await fetch(getApiUrl(`/api/admin/contacts?id=${id}&action=read`), {
         method: 'POST'
       });
@@ -67,6 +68,8 @@ export default function ContactsPage() {
         setContacts(contacts.map(c => 
           c.id === id ? { ...c, status: 'read' } : c
         ));
+        // Atualiza o contador da sidebar instantaneamente
+        decrementUnread();
       }
     } catch (error) {
       console.error('Error marking as read:', error);
