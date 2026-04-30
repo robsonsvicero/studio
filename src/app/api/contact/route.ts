@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     if (genAI) {
       try {
         console.log('Chamando Gemini API...');
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
         const prompt = `Você é um concierge para André Barbosa, corretor de imóveis em São Paulo.
 O cliente "${name}" enviou a mensagem: "${message}".
 
