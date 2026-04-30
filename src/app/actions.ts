@@ -1,4 +1,5 @@
 
+'use server';
 
 import { aiPropertyInquiryAssistant } from '@/ai/flows/ai-property-inquiry-assistant';
 import { aiConcierge } from '@/ai/flows/ai-concierge-flow';
