@@ -59,7 +59,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="mb-4 px-3 text-sm text-muted-foreground truncate">
             {user.email}
           </div>
-          <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" onClick={logout}>
+          <Button variant="outline" className="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50" onClick={logout}>
             <LogOut className="mr-3 h-5 w-5" />
             Sair
           </Button>

@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff, KeyRound } from 'lucide-react';
+import { Eye, EyeOff, KeyRound, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -58,7 +59,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4 relative">
+      <div className="absolute top-4 left-4 sm:top-8 sm:left-8">
+        <Button variant="ghost" asChild className="text-muted-foreground hover:text-primary gap-2">
+          <Link href="/">
+            <ArrowLeft size={18} />
+            <span className="hidden sm:inline">Voltar para o site</span>
+            <span className="sm:hidden">Voltar</span>
+          </Link>
+        </Button>
+      </div>
       <Card className="w-full max-w-md shadow-xl border-none">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-2">
