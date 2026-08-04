@@ -3,11 +3,6 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
   output: process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true' ? 'export' : undefined,
   /* config options here */
-  devIndicators: {
-    appIsrStatus: false,
-    buildActivity: false,
-    staticRouteIndicator: false,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

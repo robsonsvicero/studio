@@ -12,7 +12,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 
-const initialState = {
+interface FormState {
+  response: string | null;
+  summary: string | null;
+  errors: {
+    name?: string[];
+    email?: string[];
+    message?: string[];
+  } | null;
+  submitted: boolean;
+}
+
+const initialState: FormState = {
   response: null,
   summary: null,
   errors: null,
@@ -23,7 +34,7 @@ import { getApiUrl } from '@/lib/api-utils';
 
 export function Footer() {
   const logoImage = PlaceHolderImages.find((img) => img.id === 'logo-branco');
-  const [state, setState] = React.useState(initialState);
+  const [state, setState] = React.useState<FormState>(initialState);
   const [loading, setLoading] = React.useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -121,12 +132,12 @@ export function Footer() {
           <div>
             &copy; {new Date().getFullYear()} André Barbosa Imóveis. Todos os direitos reservados.
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center gap-2">
             <span className="opacity-80">Desenvolvido por</span>
-            <Link href="https://svicero.studio" target="_blank" className="transition-opacity hover:opacity-100 opacity-80">
+            <Link href="https://robsonsvicero.com.br" target="_blank" className="transition-opacity hover:opacity-100 opacity-80">
               <Image 
-                src="/assets/logo_svicero-studio.png" 
-                alt="Svicero Studio" 
+                src="/assets/logo_robson_svicero.png" 
+                alt="Robson Svicero Logo" 
                 width={100} 
                 height={20}
                 style={{ height: 'auto', width: 'auto' }}
